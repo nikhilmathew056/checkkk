@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>An Ocean for You</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 30%, #1E90FF 31%, #00008B 100%);
+        }
+
+        /* Sky and Sun */
+        .sky {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 30%;
+            background: linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%);
+            z-index: 1;
+        }
+
+        .sun {
+            position: absolute;
+            top: 40px;
+            right: 80px;
+            width: 80px;
+            height: 80px;
+            background: #fff700;
+            border-radius: 50%;
+            box-shadow: 0 0 50px #ffcc00;
+        }
+
+        .cloud {
+            position: absolute;
+            font-size: 100px;
+            opacity: 0.8;
+            z-index: 2;
+        }
+
+        .dragon {
+            position: absolute;
+            top: 10px;
+            left: 0%;
+            font-size: 250px;
+            z-index: 3;
+            opacity: 0.9;
+            animation: dragonFly 12s linear infinite alternate;
+            filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.5));
+        }
+
+        @keyframes dragonFly {
+            from { left: 0%; transform: scaleX(1); }
+            to { left: 70%; transform: scaleX(-1); }
+        }
+
+        /* Waves Animation */
+        .waves-container {
+            position: absolute;
+            top: 25%;
+            width: 100%;
+            height: 100px;
+            z-index: 5;
+        }
+
+        .wave {
+            position: absolute;
+            width: 200%;
+            height: 100%;
+            background-repeat: repeat-x;
+            background-position: 0 bottom;
+            transform-origin: center bottom;
+        }
+
+        .wave1 {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 200"><path fill="%231E90FF" opacity="0.8" d="M0,100 C200,150 400,30 600,100 C800,170 1000,30 1200,100 C1400,170 1600,30 1600,100 V200 H0 Z"></path></svg>');
+            animation: waveMove 12s linear infinite;
+            z-index: 10;
+            opacity: 0.9;
+        }
+
+        .wave2 {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 200"><path fill="%2300BFFF" opacity="0.6" d="M0,100 C300,40 500,160 800,100 C1100,40 1300,160 1600,100 V200 H0 Z"></path></svg>');
+            animation: waveMove 8s linear infinite;
+            z-index: 8;
+        }
+
+        .wave3 {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 200"><path fill="%2387CEEB" opacity="0.4" d="M0,100 C400,50 600,150 1000,100 C1400,50 1500,150 1600,100 V200 H0 Z"></path></svg>');
+            animation: waveMove 15s linear infinite;
+            z-index: 6;
+        }
+
+        @keyframes waveMove {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        /* Message Overlay */
+        .message {
+            position: absolute;
+            top: 10%;
+            width: 100%;
+            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 6;
+        }
+
+        .instruction {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: white;
+            font-family: sans-serif;
+            font-size: 12px;
+            opacity: 0.6;
+            z-index: 200;
+        }
+
+        .coral {
+            position: absolute;
+            font-size: 50px;
+            z-index: 10;
+            opacity: 0.8;
+        }
+
+        .top-left {
+            top: 10px;
+            left: 10px;
+        }
+
+        .top-right {
+            top: 10px;
+            right: 10px;
+        }
+
+        .bottom-left {
+            bottom: 10px;
+            left: 10px;
+        }
+
+        .bottom-right {
+            bottom: 10px;
+            right: 10px;
+        }
+
+        .girl {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 100px;
+            z-index: 20;
+            opacity: 0.9;
+        }
+
+        .crown {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 60px;
+            z-index: 21;
+            opacity: 0.9;
+        }
+
+        .apology-box {
+            position: absolute;
+            top: 32%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 25;
+            text-align: center;
+        }
+
+        .apology-box textarea {
+            font-size: 16px;
+            padding: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            color: #000;
+            resize: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sky">
+        <div class="sun"></div>
+        <div class="cloud" style="top: 20px; left: 10%;">☁️</div>
+        <div class="cloud" style="top: 50px; left: 30%;">☁️</div>
+        <div class="cloud" style="top: 30px; left: 60%;">☁️</div>
+        <div class="cloud" style="top: 60px; left: 80%;">☁️</div>
+        <div class="dragon">🐉</div>
+    </div>
+
+    <div class="message">
+        <h1>I hope your day gets better...</h1>
+        <p>Just keep swimming, beautiful!</p>
+    </div>
+
+    <div class="waves-container">
+        <div class="wave wave1"></div>
+        <div class="wave wave2"></div>
+        <div class="wave wave3"></div>
+    </div>
+
+    <canvas id="oceanCanvas"></canvas>
+    
+    <div class="instruction">Refresh to reset the ocean magic</div>
+
+    <div class="coral bottom-left">🪸</div>
+    <div class="coral bottom-left" style="left: 60px; bottom: 10px;">🪸</div>
+    <div class="coral bottom-left" style="left: 110px; bottom: 20px;">🪸</div>
+    <div class="coral bottom-left" style="left: 10px; bottom: 60px;">🪸</div>
+    <div class="coral bottom-left" style="left: 60px; bottom: 70px;">🪸</div>
+    <div class="coral bottom-right">🪸</div>
+    <div class="coral bottom-right" style="right: 60px; bottom: 10px;">🪸</div>
+    <div class="coral bottom-right" style="right: 110px; bottom: 20px;">🪸</div>
+    <div class="coral bottom-right" style="right: 10px; bottom: 60px;">🪸</div>
+    <div class="coral bottom-right" style="right: 60px; bottom: 70px;">🪸</div>
+
+    <div class="girl">🥰</div>
+    <div class="crown">👑</div>
+
+    <div class="apology-box">
+        <textarea placeholder="textttttttttttttttttttttttttttttttttttt" rows="3" cols="50"></textarea>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('oceanCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const schoolOfFish = [];
+        const dolphins = [];
+        const mermaids = [];
+        const bubbles = [];
+        const notes = [];
+        const whales = [];
+        const sharks = [];
+        const octopuses = [];
+        const jellyfish = [];
+
+        class Fish {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = (Math.random() * (canvas.height - canvas.height * 0.4)) + canvas.height * 0.4;
+                this.speed = 1 + Math.random() * 2;
+                this.size = 15 + Math.random() * 20;
+                this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                this.direction = Math.random() > 0.5 ? 1 : -1;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                if (this.direction === -1) ctx.scale(-1, 1);
+                
+                // Body
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, this.size, this.size/2, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Tail
+                ctx.beginPath();
+                ctx.moveTo(-this.size, 0);
+                ctx.lineTo(-this.size - 10, -10);
+                ctx.lineTo(-this.size - 10, 10);
+                ctx.closePath();
+                ctx.fill();
+
+                // Eye
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(this.size/2, -2, 3, 0, Math.PI*2);
+                ctx.fill();
+
+                ctx.restore();
+            }
+
+            update() {
+                this.x += this.speed * this.direction;
+                if (this.x > canvas.width + 50) this.x = -50;
+                if (this.x < -50) this.x = canvas.width + 50;
+                this.y += Math.sin(this.x / 50) * 0.5;
+                this.draw();
+            }
+        }
+
+        class Dolphin {
+            constructor(type) {
+                this.type = type;
+                if (this.type === 'jumper') {
+                    this.reset();
+                    this.x = Math.random() * canvas.width;
+                } else if (this.type === 'swimmer') {
+                    this.x = Math.random() * canvas.width;
+                    this.y = canvas.height * 0.5 + Math.random() * canvas.height * 0.3;
+                    this.speedX = (Math.random() - 0.5) * 4; // horizontal speed
+                    this.speedY = (Math.random() - 0.5) * 2; // vertical oscillation
+                    this.direction = this.speedX > 0 ? 1 : -1;
+                }
+            }
+
+            reset() {
+                this.x = -100;
+                this.y = canvas.height * 0.5;
+                this.jumpHeight = 100 + Math.random() * 150;
+                this.progress = 0;
+                this.speed = 0.01 + Math.random() * 0.01;
+                this.wait = Math.random() * 200;
+                this.active = false;
+            }
+
+            draw() {
+                ctx.font = '50px serif';
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                if (this.type === 'swimmer') {
+                    if (this.direction === -1) ctx.scale(-1, 1);
+                }
+                ctx.fillText('🐬', 0, 0);
+                ctx.restore();
+            }
+
+            update() {
+                if (this.type === 'jumper') {
+                    if (!this.active) {
+                        this.wait--;
+                        if (this.wait <= 0) this.active = true;
+                        return;
+                    }
+
+                    this.progress += this.speed;
+                    this.x += 5;
+                    // Parabolic jump
+                    this.y = (canvas.height * 0.35) - Math.sin(this.progress * Math.PI) * this.jumpHeight;
+
+                    if (this.progress >= 1) {
+                        this.reset();
+                    }
+                } else if (this.type === 'swimmer') {
+                    this.x += this.speedX;
+                    this.y += Math.sin(this.x / 50) * this.speedY;
+
+                    if (this.x > canvas.width + 50) {
+                        this.x = -50;
+                    }
+                    if (this.x < -50) {
+                        this.x = canvas.width + 50;
+                    }
+                    // Keep in water
+                    if (this.y < canvas.height * 0.4) this.y = canvas.height * 0.4;
+                    if (this.y > canvas.height * 0.8) this.y = canvas.height * 0.8;
+                }
+                this.draw();
+            }
+        }
+
+        class Mermaid {
+            constructor(x) {
+                this.x = x;
+                this.baseY = canvas.height * 0.7;
+                this.y = this.baseY;
+                this.angle = Math.random() * Math.PI * 2;
+            }
+
+            draw() {
+                ctx.font = '80px serif';
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                // Dancing sway
+                ctx.rotate(Math.sin(this.angle) * 0.1);
+                ctx.fillText('🧜‍♀️', 0, 0);
+                ctx.restore();
+                
+                // Singing notes
+                if (Math.random() < 0.02) {
+                    notes.push(new Note(this.x + 40, this.y - 40));
+                }
+            }
+
+            update() {
+                this.angle += 0.05;
+                this.y = this.baseY + Math.sin(this.angle) * 20;
+                this.draw();
+            }
+        }
+
+        class Note {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.opacity = 1;
+                this.char = ['♪', '♫', '🎶'][Math.floor(Math.random() * 3)];
+            }
+            update() {
+                this.y -= 1;
+                this.x += Math.sin(this.y/10);
+                this.opacity -= 0.01;
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.font = '20px serif';
+                ctx.fillText(this.char, this.x, this.y);
+            }
+        }
+
+        class Bubble {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + 20;
+                this.size = 2 + Math.random() * 5;
+                this.speed = 1 + Math.random() * 2;
+                this.opacity = 0.1 + Math.random() * 0.5;
+            }
+            update() {
+                this.y -= this.speed;
+                if (this.y < canvas.height * 0.3) this.reset();
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+                ctx.strokeStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.stroke();
+            }
+        }
+
+        class Whale {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height * 0.6 + Math.random() * canvas.height * 0.2;
+                this.speed = 0.5 + Math.random() * 0.5;
+                this.direction = Math.random() > 0.5 ? 1 : -1;
+            }
+            draw() {
+                ctx.font = '100px serif';
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                if (this.direction === -1) ctx.scale(-1, 1);
+                ctx.fillText('🐋', 0, 0);
+                ctx.restore();
+            }
+            update() {
+                this.x += this.speed * this.direction;
+                if (this.x > canvas.width + 100) this.x = -100;
+                if (this.x < -100) this.x = canvas.width + 100;
+                this.draw();
+            }
+        }
+
+        class Shark {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height * 0.5 + Math.random() * canvas.height * 0.3;
+                this.speed = 2 + Math.random() * 3;
+                this.direction = Math.random() > 0.5 ? 1 : -1;
+            }
+            draw() {
+                ctx.font = '60px serif';
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                if (this.direction === -1) ctx.scale(-1, 1);
+                ctx.fillText('🦈', 0, 0);
+                ctx.restore();
+            }
+            update() {
+                this.x += this.speed * this.direction;
+                if (this.x > canvas.width + 100) this.x = -100;
+                if (this.x < -100) this.x = canvas.width + 100;
+                this.draw();
+            }
+        }
+
+        class Octopus {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height * 0.7 + Math.random() * canvas.height * 0.2;
+                this.angle = Math.random() * Math.PI * 2;
+            }
+            draw() {
+                ctx.font = '50px serif';
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(Math.sin(this.angle) * 0.2);
+                ctx.fillText('🐙', 0, 0);
+                ctx.restore();
+            }
+            update() {
+                this.angle += 0.02;
+                this.draw();
+            }
+        }
+
+        class Jellyfish {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.baseY = canvas.height * 0.4 + Math.random() * canvas.height * 0.4;
+                this.y = this.baseY;
+                this.speed = 0.5 + Math.random() * 1;
+            }
+            draw() {
+                ctx.font = '40px serif';
+                ctx.fillText('🪼', this.x, this.y);
+            }
+            update() {
+                this.y += Math.sin(Date.now() * 0.001 * this.speed) * 0.5;
+                this.x += Math.sin(Date.now() * 0.002 * this.speed) * 0.2;
+                if (this.x > canvas.width + 50) this.x = -50;
+                if (this.x < -50) this.x = canvas.width + 50;
+                this.draw();
+            }
+        }
+
+        // Initialize entities
+        for (let i = 0; i < 30; i++) schoolOfFish.push(new Fish());
+        dolphins.push(new Dolphin('jumper'));
+        for (let i = 0; i < 5; i++) dolphins.push(new Dolphin('swimmer'));
+        for (let i = 0; i < 100; i++) bubbles.push(new Bubble());
+        mermaids.push(new Mermaid(canvas.width * 0.15), new Mermaid(canvas.width * 0.35), new Mermaid(canvas.width * 0.65), new Mermaid(canvas.width * 0.85));
+        whales.push(new Whale());
+        for (let i = 0; i < 2; i++) sharks.push(new Shark());
+        for (let i = 0; i < 5; i++) octopuses.push(new Octopus());
+        for (let i = 0; i < 3; i++) jellyfish.push(new Jellyfish());
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Gradient Background for the underwater part
+            let grd = ctx.createLinearGradient(0, canvas.height * 0.3, 0, canvas.height);
+            grd.addColorStop(0, "#1E90FF");
+            grd.addColorStop(1, "#000033");
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, canvas.height * 0.3, canvas.width, canvas.height * 0.7);
+
+            // Draw sandy seabed
+            ctx.fillStyle = '#F4A460';
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height);
+            for (let i = 0; i <= canvas.width; i += 50) {
+                let y = canvas.height - 20 + Math.sin(i * 0.01) * 10;
+                ctx.lineTo(i, y);
+            }
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.closePath();
+            ctx.fill();
+
+            bubbles.forEach(b => b.update());
+            whales.forEach(w => w.update());
+            sharks.forEach(s => s.update());
+            octopuses.forEach(o => o.update());
+            jellyfish.forEach(j => j.update());
+            schoolOfFish.forEach(f => f.update());
+            mermaids.forEach(m => m.update());
+            dolphins.forEach(d => d.update());
+            
+            notes.forEach((n, index) => {
+                n.update();
+                if (n.opacity <= 0) notes.splice(index, 1);
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        animate();
+    </script>
+</body>
+</html>
